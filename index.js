@@ -1,6 +1,7 @@
 const express = require('express')
 const exphbs = require('express-handlebars')
 const axios = require('axios')
+const env = require('./envs')["integration"]
 
 const app = express()
 const port = process.env.PORT || 44444
@@ -8,21 +9,7 @@ const port = process.env.PORT || 44444
 const clientID = 'client'
 const clientSecret = 'secret'
 
-// Dev
-const authServer = 'http://app.dev-vcita.me:7200'
-// Integration
-// const authServer = 'http://app.meet2know.com'
-// Production
-// const serverFrontage = 'http://app.vcita.com'
 const authorizeUri = '/app/oauth/authorize'
-
-// Define api server URLs (Core in dev, API Gateway in int, prod)
-// Dev
-const apiServer = 'http://localhost:7100'
-// Integration
-// const apiServer = 'https://api-int.vchost.co/'
-// Production
-// const apiServer = 'http://api.vcita.biz'
 const tokenUri = '/oauth/token'
 const clientsRetrieveUri = '/platform/v1/clients'
 const userInfoUri = '/oauth/userinfo'
@@ -49,7 +36,7 @@ const getCallbackURL = req => {
 
 app.get('/', (req, res) => {
   let callbackURL = getCallbackURL(req)
-  let url = `${authServer}${authorizeUri}?response_type=code&client_id=${clientID}&redirect_uri=${callbackURL}`
+  let url = `${env.auth_server}${authorizeUri}?response_type=code&client_id=${clientID}&redirect_uri=${callbackURL}`
   res.redirect(url)
 })
 
@@ -66,7 +53,7 @@ app.get('/callback', async (req, res) => {
     redirect_uri: getCallbackURL(req),
   }
   try {
-    let result = await axios.post(`${apiServer}${tokenUri}`, params, { headers: headers })
+    let result = await axios.post(`${env.api_server}${tokenUri}`, params, { headers: headers })
     let token = result.data.access_token
     res.render('callback', { title: 'Authorized', token: token })
   } catch (error) {
@@ -84,7 +71,7 @@ app.get('/clients', async (req, res) => {
       'Authorization': `Bearer ${token}`,
     }
 
-    let result = await axios.get(`${apiServer}${clientsRetrieveUri}`, { headers: headers })
+    let result = await axios.get(`${env.api_server}${clientsRetrieveUri}`, { headers: headers })
     let info = result.data
     res.render('clients', { title: 'Clients', token: token, info: info })
   } catch (error) {
@@ -102,7 +89,7 @@ app.get('/user_info', async (req, res) => {
       'Authorization': `Bearer ${token}`,
     }
 
-    let result = await axios.get(`${apiServer}${userInfoUri}`, { headers: headers })
+    let result = await axios.get(`${env.api_server}${userInfoUri}`, { headers: headers })
     let info = result.data
 
     res.render('user_info', { title: 'User Info', token: token, info: info })
