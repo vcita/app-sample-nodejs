@@ -1,4 +1,3 @@
-
 const envs = {
     integration: {
         auth_server: 'http://app.meet2know.com',
@@ -10,7 +9,7 @@ const envs = {
     },
     production: {
         auth_server: 'http://app.vcita.com',
-        api_server: 'https://api2.vcita.com/'
+        api_server: 'https://api2.vcita.com'
     }
 }
 
