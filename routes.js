@@ -1,4 +1,6 @@
 const axios = require('axios')
+const jwt = require('jsonwebtoken');
+
 
 function getCallbackURL(req) {
     const host = req.get('host')
@@ -27,7 +29,9 @@ module.exports = (app, env, clientID, clientSecret) => {
         try {
             let result = await axios.post(`${env.api_server}/oauth/token`, params, {headers: headers})
             let token = result.data.access_token
-            res.render('callback', {title: 'Authorized', token: token})
+            const business_uid = jwt.decode(result.data.id_token).business_id
+
+            res.render('callback', {title: 'Authorized', token: token, business_uid: business_uid})
         } catch (error) {
             console.log('error', error)
             res.json({params: params, error: error})
