@@ -1,4 +1,4 @@
-const envs = {
+module.exports = {
     integration: {
         auth_server: 'http://app.meet2know.com',
         api_server: 'https://api2.meet2know.com/'
@@ -12,5 +12,3 @@ const envs = {
         api_server: 'https://api2.vcita.com'
     }
 }
-
-module.exports = envs
