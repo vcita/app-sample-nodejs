@@ -14,5 +14,13 @@ function load() {
     }
 }
 
+async function clear() {
+    try {
+        await fs.unlinkSync(DB_FILE)
+    } catch {
+    }
+}
+
 module.exports.store = store
 module.exports.load = load
+module.exports.clear = clear

@@ -1,0 +1,103 @@
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1>vcita sample app</h1>
+
+    <h3 id="status"></h3>
+
+    <table id="details">
+        <tr><td><b>business uid:</b></td><td id="business_uid"></td></tr>
+        <tr><td><b>auth token:</b></td><td id="token"></td></tr>
+    </table>
+
+    <button id="uninstall">Uninstall</button>
+    <button id="user_info">User info</button>
+    <button id="clients">Clients</button>
+
+    <a href="/install">install</a>
+
+    <pre id="data"></pre>
+
+</body>
+
+<script>
+    function not_installed() {
+        $('#status')[0].innerText = 'App is not installed'
+        $('#business_uid')[0].innerText = ''
+        $('#token')[0].innerText = ''
+        $('#data')[0].innerText = ''
+    }
+
+    function installed(business_uid, token) {
+        $('#status')[0].innerText = 'App is installed'
+        $('#business_uid')[0].innerText = business_uid
+        $('#token')[0].innerText = token
+    }
+
+    $(document).ready(function(){
+        $.ajax({
+            url: '/status',
+            type: "GET",
+            success: function (result) {
+                if (result.token)
+                    installed(result.business_uid, result.token)
+                else
+                    not_installed()
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(`${textStatus}, ${errorThrown}`)
+            }
+        });
+    });
+
+    $("button#uninstall").on("click", function (event) {
+        $.ajax({
+            url: '/uninstall',
+            type: "POST",
+            success: function (result) {
+                not_installed()
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(`${textStatus}, ${errorThrown}`)
+            }
+        });
+    });
+
+    $("button#user_info").on("click", function (event) {
+        const token = $('#token')[0].innerText
+        if (!token) {
+            alert('App is not installed')
+            return
+        }
+        $.ajax({
+            url: `/user_info?token=${token}`,
+            type: "GET",
+            success: function (result) {
+                $('#data')[0].innerText = JSON.stringify(result, undefined, 2)
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(`${textStatus}, ${errorThrown}`)
+            }
+        });
+    });
+
+    $("button#clients").on("click", function (event) {
+        const token = $('#token')[0].innerText
+        if (!token) {
+            alert('App is not installed')
+            return
+        }
+        $.ajax({
+            url: `/clients?token=${token}`,
+            type: "GET",
+            success: function (result) {
+                $('#data')[0].innerText = JSON.stringify(result, undefined, 2)
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                alert(`${textStatus}, ${errorThrown}`)
+            }
+        });
+    });
+</script>

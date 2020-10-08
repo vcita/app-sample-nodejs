@@ -9,13 +9,20 @@ function getCallbackURL(req) {
 
 module.exports = (app, env, clientID, clientSecret) => {
 
-    app.get('/', (req, res) => {
+    app.get('/status', (req, res) => {
         const info = db.load()
-        if (info) {
-            res.render('callback', {title: 'Authorized', token: info.token, business_uid: info.business_uid})
-            return
-        }
+        if (info)
+            res.send(info)
+        else
+            res.send({})
+    })
 
+    app.post('/uninstall', (req, res) => {
+        db.clear()
+        res.send({})
+    })
+
+    app.get('/install', (req, res) => {
         let url = `${env.auth_server}/app/oauth/authorize?response_type=code&client_id=${clientID}&redirect_uri=${getCallbackURL(req)}`
         res.redirect(url)
     })
@@ -38,7 +45,7 @@ module.exports = (app, env, clientID, clientSecret) => {
             const business_uid = jwt.decode(result.data.id_token).business_id
             db.store(business_uid, token)
 
-            res.render('callback', {title: 'Authorized', token: token, business_uid: business_uid})
+            res.redirect('/')
         } catch (error) {
             console.log('error', error)
             res.json({params: params, error: error})
@@ -55,8 +62,7 @@ module.exports = (app, env, clientID, clientSecret) => {
             }
 
             let result = await axios.get(`${env.api_server}/platform/v1/clients`, {headers: headers})
-            let info = result.data
-            res.render('clients', {title: 'Clients', token: token, info: info})
+            res.send(result.data.data)
         } catch (error) {
             console.log('error', error)
             res.json({error: error})
@@ -73,9 +79,7 @@ module.exports = (app, env, clientID, clientSecret) => {
             }
 
             let result = await axios.get(`${env.api_server}/oauth/userinfo`, {headers: headers})
-            let info = result.data
-
-            res.render('user_info', {title: 'User Info', token: token, info: info})
+            res.send(result.data)
         } catch (error) {
             console.log('error', error)
             res.json({error: error})
