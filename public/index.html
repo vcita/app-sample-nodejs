@@ -1,0 +1,32 @@
+<head>
+    <link rel="shortcut icon" type="image/jpg" href="favicon.png"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/index.js"></script>
+
+    <title>vcita sample app</title>
+</head>
+
+<body>
+    <h1>vcita sample app</h1>
+
+    <h3 id="status"></h3>
+
+    <table id="details">
+        <tr><td><b>business uid:</b></td><td id="business_uid"></td></tr>
+        <tr><td><b>auth token:</b></td><td id="token"></td></tr>
+    </table>
+
+    <p>
+    <button id="uninstall" onclick="uninstall()">Uninstall</button>
+    <button id="user_info" onclick="user_info()">User info</button>
+    <button id="clients" onclick="clients()">Clients</button>
+
+    <a href="/install">install</a>
+    </p>
+
+    <pre id="data"></pre>
+
+</body>
+<script>
+    $(document).ready(init())
+</script>
